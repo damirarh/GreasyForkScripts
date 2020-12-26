@@ -44,6 +44,15 @@
             achievement.score = scoreData && scoreData.replace(" - ", "");
           }
 
+          const progressElement = achievementElement.querySelector(
+            ".progress-bar"
+          );
+          if (progressElement) {
+            achievement.ratio = progressElement.dataset.af.match(
+              /= (([\d\.])+)\)$/
+            )[1];
+          }
+
           const lockElement = achievementElement.querySelector(".lock");
           achievement.unlocked = !!(
             lockElement && lockElement.classList.contains("u")
@@ -63,7 +72,7 @@
     }
 
     const achievementsTable =
-      "DLC type\tDLC title\tName\tDescription\tScore\tTA\tUnlocked\tURL\n" +
+      "DLC type\tDLC title\tName\tDescription\tScore\tTA\tTA ratio\tUnlocked\tURL\n" +
       achievements
         .map(function (achievement) {
           return (
@@ -73,6 +82,7 @@
             `\t${achievement.description}` +
             `\t${achievement.score}` +
             `\t${achievement.ta}` +
+            `\t ${achievement.ratio}` + // leading space helps Excel not to recognize it as a date
             `\t${achievement.unlocked ? "Yes" : "No"}` +
             `\t${achievement.url}`
           );
