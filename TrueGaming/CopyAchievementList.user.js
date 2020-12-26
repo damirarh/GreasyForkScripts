@@ -6,9 +6,9 @@
 // @author       Damir Arh
 // @license      MIT
 // @supportURL   https://github.com/damirarh/GreasyForkScripts
-// @match        https://www.trueachievements.com/game/*/achievements
-// @match        https://www.truetrophies.com/game/*/trophies
-// @match        https://truesteamachievements.com/game/*/achievements
+// @match        https://www.trueachievements.com/game/*/achievements*
+// @match        https://www.truetrophies.com/game/*/trophies*
+// @match        https://truesteamachievements.com/game/*/achievements*
 // @grant        none
 // ==/UserScript==
 
