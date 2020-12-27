@@ -16,13 +16,14 @@
   "use strict";
 
   function copyToClipboard() {
-    const elementsToParse = document.querySelectorAll(
-      ".ach-panels, .panel-header[id]"
-    );
-    let currentDlc;
     let achievements = [];
 
-    for (const element of elementsToParse) {
+    const imageViewElements = document.querySelectorAll(
+      ".ach-panels, .panel-header[id]"
+    );
+
+    let currentDlc;
+    for (const element of imageViewElements) {
       if (element.classList.contains("ach-panels")) {
         const achievementElements = element.querySelectorAll("li");
         for (const achievementElement of achievementElements) {
@@ -69,6 +70,58 @@
           title: dlcTitleElement && dlcTitleElement.textContent,
         };
       }
+    }
+
+    const listViewElements = document.querySelectorAll(
+      "#oGameItems .even, #oGameItems .odd"
+    );
+
+    for (const rowElement of listViewElements) {
+      const achievement = {};
+
+      const cellElements = rowElement.querySelectorAll("td");
+
+      if (cellElements[0]) {
+        const titleElement = cellElements[0].querySelector("a");
+        if (titleElement) {
+          achievement.dlc = {
+            title: titleElement.getAttribute("title"),
+          };
+        }
+      }
+
+      if (cellElements[2]) {
+        const titleElement = cellElements[2].querySelector("a");
+        if (titleElement) {
+          achievement.name = titleElement.textContent;
+          achievement.url = titleElement.href.match(/^([^?])+/g)[0];
+        }
+        const descriptionElement = cellElements[2].querySelector(".achdesc");
+        if (descriptionElement) {
+          achievement.description = descriptionElement.textContent;
+        }
+      }
+
+      if (cellElements[3]) {
+        achievement.ta = cellElements[3].textContent;
+      }
+
+      if (cellElements[4]) {
+        const scoreElement = cellElements[4].querySelector(".small");
+        if (scoreElement) {
+          achievement.score = scoreElement.textContent.match(/\d+/g)[0];
+        }
+      }
+
+      if (cellElements[5]) {
+        achievement.ratio = cellElements[5].textContent;
+      }
+
+      if (cellElements[6]) {
+        achievement.unlocked = !!cellElements[6].textContent;
+      }
+
+      achievements.push(achievement);
     }
 
     const achievementsTable =
