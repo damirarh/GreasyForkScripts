@@ -15,8 +15,43 @@
 (function () {
   "use strict";
 
+  function getSite() {
+    switch (location.host) {
+      case "www.trueachievements.com":
+        return "TA";
+      case "www.truetrophies.com":
+        return "TT";
+      case "truesteamachievements.com":
+        return "TSA";
+    }
+  }
+
+  function getScoreCaption(site) {
+    switch (site) {
+      case "TA":
+        return "\tGamerscore";
+      case "TT":
+        return "\tTrophy";
+      case "TSA":
+        return "";
+    }
+  }
+
+  function getScoreValue(achievement, site) {
+    switch (site) {
+      case "TA":
+        return `\t${achievement.score}`;
+      case "TT":
+        return `\t${achievement.trophy}`;
+      case "TSA":
+        return "";
+    }
+  }
+
+  const site = getSite();
+
   function copyToClipboard() {
-    let achievements = [];
+    const achievements = [];
 
     const imageViewElements = document.querySelectorAll(
       ".ach-panels, .panel-header[id]"
@@ -34,7 +69,7 @@
           const titleElement = achievementElement.querySelector(".title");
           if (titleElement) {
             achievement.name = titleElement.textContent;
-            achievement.ta = titleElement.dataset.af;
+            achievement.trueScore = titleElement.dataset.af;
             achievement.url = titleElement.href.match(/^([^?])+/g)[0];
           }
 
@@ -43,6 +78,17 @@
             achievement.description = descriptionElement.textContent;
             const scoreData = descriptionElement.dataset.bf;
             achievement.score = scoreData && scoreData.replace(" - ", "");
+            if (descriptionElement.classList.contains("t")) {
+              if (descriptionElement.classList.contains("b")) {
+                achievement.trophy = "Bronze";
+              } else if (descriptionElement.classList.contains("s")) {
+                achievement.trophy = "Silver";
+              } else if (descriptionElement.classList.contains("g")) {
+                achievement.trophy = "Gold";
+              } else if (descriptionElement.classList.contains("p")) {
+                achievement.trophy = "Platinum";
+              }
+            }
           }
 
           const progressElement = achievementElement.querySelector(
@@ -103,29 +149,49 @@
       }
 
       if (cellElements[3]) {
-        achievement.ta = cellElements[3].textContent;
+        achievement.trueScore = cellElements[3].textContent;
       }
 
-      if (cellElements[4]) {
+      if (site === "TA" && cellElements[4]) {
         const scoreElement = cellElements[4].querySelector(".small");
         if (scoreElement) {
           achievement.score = scoreElement.textContent.match(/\d+/g)[0];
         }
       }
 
-      if (cellElements[5]) {
-        achievement.ratio = cellElements[5].textContent;
+      const cellIndexOffset = site === "TA" ? 1 : 0;
+
+      if (cellElements[4 + cellIndexOffset]) {
+        achievement.ratio = cellElements[4 + cellIndexOffset].textContent;
       }
 
-      if (cellElements[6]) {
-        achievement.unlocked = !!cellElements[6].textContent;
+      if (site === "TT") {
+        const trophyScore =
+          Number.parseInt(achievement.trueScore.replace(",", "")) /
+          Number.parseFloat(achievement.ratio);
+
+        if (Math.abs(15 - trophyScore) < 1) {
+          achievement.trophy = "Bronze";
+        } else if (Math.abs(30 - trophyScore) < 1) {
+          achievement.trophy = "Silver";
+        } else if (Math.abs(90 - trophyScore) < 1) {
+          achievement.trophy = "Gold";
+        } else if (Math.abs(300 - trophyScore) < 1) {
+          achievement.trophy = "Platinum";
+        }
+      }
+
+      if (cellElements[5 + cellIndexOffset]) {
+        achievement.unlocked = !!cellElements[5 + cellIndexOffset].textContent;
       }
 
       achievements.push(achievement);
     }
 
     const achievementsTable =
-      "DLC type\tDLC title\tName\tDescription\tScore\tTA\tTA ratio\tUnlocked\tURL\n" +
+      `DLC type\tDLC title\tName\tDescription${getScoreCaption(
+        site
+      )}\t${site}\t${site} ratio\tUnlocked\tURL\n` +
       achievements
         .map(function (achievement) {
           return (
@@ -133,8 +199,8 @@
             `\t${(achievement.dlc && achievement.dlc.title) || ""}` +
             `\t${achievement.name}` +
             `\t${achievement.description}` +
-            `\t${achievement.score}` +
-            `\t${achievement.ta}` +
+            getScoreValue(achievement, site) +
+            `\t${achievement.trueScore}` +
             `\t ${achievement.ratio}` + // leading space helps Excel not to recognize it as a date
             `\t${achievement.unlocked ? "Yes" : "No"}` +
             `\t${achievement.url}`
@@ -152,13 +218,18 @@
     return;
   }
 
+  const iconLabel =
+    site === "TT"
+      ? "Copy trophies to clipboard"
+      : "Copy achievements to clipboard";
+
   const copyIcon = document.createElement("img");
   copyIcon.setAttribute("src", "/images/icons/copy.png");
-  copyIcon.setAttribute("alt", "Copy to clipboard");
+  copyIcon.setAttribute("alt", iconLabel);
 
   const copyAnchor = document.createElement("a");
   copyAnchor.setAttribute("href", "#");
-  copyAnchor.setAttribute("title", "Copy to clipboard");
+  copyAnchor.setAttribute("title", iconLabel);
   copyAnchor.style.marginLeft = "0";
   copyAnchor.appendChild(copyIcon);
 
