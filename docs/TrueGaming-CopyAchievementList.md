@@ -18,6 +18,10 @@ This makes it work well when pasted in a spreadsheet application, but keeps it u
 
 ## Release notes
 
+### v1.0.1 (2021-05-23)
+
+- Fixes parsing of DLC information after site redesign
+
 ### v1.0.0 (2020-12-27)
 
 - Initial release

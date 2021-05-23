@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Copy TrueGaming achievement list
 // @namespace    https://damirscorner.com
-// @version      1.0.0
+// @version      1.0.1
 // @description  Copies the achievements/trophies from the True Achievements, TrueTrophies, and TrueSteamAchievements game page to clipboard as a table for further processing elsewhere.
 // @author       Damir Arh
 // @license      MIT
@@ -54,7 +54,7 @@
     const achievements = [];
 
     const imageViewElements = document.querySelectorAll(
-      ".ach-panels, .panel-header[id]"
+      ".ach-panels, .pnl-hd.no-pr.game"
     );
 
     let currentDlc;
@@ -107,9 +107,9 @@
 
           achievements.push(achievement);
         }
-      } else if (element.classList.contains("panel-header")) {
-        const dlcTypeElement = element.querySelector(".tile span");
-        const dlcTitleElement = element.querySelector(".title a");
+      } else if (!element.classList.contains("gamer")) {
+        const dlcTypeElement = element.querySelector(".info .img span");
+        const dlcTitleElement = element.querySelector("h2 a");
 
         currentDlc = {
           type: dlcTypeElement && dlcTypeElement.textContent,
