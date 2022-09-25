@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Copy recipes from leaneen.com
 // @namespace    https://damirscorner.com
-// @version      1.0.1
+// @version      1.0.2
 // @description  Enables regular browser commands for web page interaction (mouse & keyboard) on leaneen.com to allow copying content.
 // @author       Damir Arh
 // @license      MIT
@@ -30,5 +30,6 @@
   // remove event handlers that disable context menu, text selection and keyboard shortcuts
   document.oncontextmenu = undefined;
   document.onselectstart = undefined;
+  document.onselectionchange = undefined;
   jQuery(document).unbind("keyup keydown");
 })();
