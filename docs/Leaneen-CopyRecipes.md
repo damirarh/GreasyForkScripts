@@ -4,6 +4,10 @@ Enables regular browser commands for web page interaction (mouse & keyboard) on 
 
 ## Release notes
 
+### v1.0.3 (2024-11-04)
+
+- Fix after site update
+
 ### v1.0.2 (2022-06-05)
 
 - Fix after site update

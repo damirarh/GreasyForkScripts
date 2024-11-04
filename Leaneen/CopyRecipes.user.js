@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Copy recipes from leaneen.com
 // @namespace    https://damirscorner.com
-// @version      1.0.2
+// @version      1.0.3
 // @description  Enables regular browser commands for web page interaction (mouse & keyboard) on leaneen.com to allow copying content.
 // @author       Damir Arh
 // @license      MIT
@@ -23,13 +23,29 @@
   style.sheet.insertRule(
     '*:not(input):not(textarea):not(text):not([contenteditable="true"]):not([contenteditable]):not(code):not(code *), *::after, *::backdrop, *::before, *::cue, *::marker, *::placeholder { user-select: auto !important; }'
   );
-  style.sheet.insertRule(
-    '*:not(input):not(textarea):not(text):not([contenteditable="true"]):not([contenteditable]):not(code):not(code *)::selection, *:not(input):not(textarea):not(text):not([contenteditable="true"]):not([contenteditable]):not(code):not(code *)::-moz-selection { background: lightgrey !important; }'
-  );
+  // override transparent text selection background
+  try {
+    style.sheet.insertRule(
+      '*:not(input):not(textarea):not(text):not([contenteditable="true"]):not([contenteditable="true"] *):not([contenteditable]):not([contenteditable] *):not(code):not(code *)::selection { background: lightgrey !important; }'
+    );
+  } catch {
+    // ignore error for unsupported ::selection
+  }
+  try {
+    style.sheet.insertRule(
+      '*:not(input):not(textarea):not(text):not([contenteditable="true"]):not([contenteditable="true"] *):not([contenteditable]):not([contenteditable] *):not(code):not(code *)::-moz-selection { background: lightgrey !important; }'
+    );
+  } catch {
+    // ignore error for unsupported ::-moz-selection
+  }
 
   // remove event handlers that disable context menu, text selection and keyboard shortcuts
   document.oncontextmenu = undefined;
   document.onselectstart = undefined;
   document.onselectionchange = undefined;
-  jQuery(document).unbind("keyup keydown");
+  jQuery(document).ready(function() {
+    setTimeout(function() {
+      jQuery(document).unbind("keyup keydown");
+    }, 500);
+  });
 })();
